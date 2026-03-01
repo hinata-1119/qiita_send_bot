@@ -43,7 +43,7 @@ FETCH_LIMIT = 5
 USE_AI_SUMMARY = True
 AI_MODEL = "gemini-3-flash-preview"
 
-# --- オプション設定 (将来的な拡張用) ---
+# --- オプション設定 (将来的な拡gi張用) ---
 TARGET_ORGANIZATION = "MDXQ"  # FETCH_MODE = "organization" の時のみ使用
 
 # ==========================================

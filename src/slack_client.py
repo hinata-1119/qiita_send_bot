@@ -34,7 +34,7 @@ def send_to_slack(article: dict, summary: str):
                 {"type": "image", "image_url": user_icon, "alt_text": user_id},
                 {
                     "type": "mrkdwn",
-                    "text": f"*{user_id}*  |  📅 {date_str}  |  🏷 {tags_str}  |  👍 {likes} LGTM",
+                    "text": f"*{user_id}*  |  📅 {date_str}  |  🏷 {tags_str}  |  👍 {likes} LGTM",  # noqa: E051
                 },
             ],
         },
