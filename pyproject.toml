@@ -1,0 +1,30 @@
+[project]
+name = "qiita-monitor"
+version = "0.1.0"
+description = "Qiita Intelligence Monitor using Generative AI"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "requests>=2.31.0",
+    "google-genai",
+    "gspread>=6.0.0",
+    "oauth2client>=4.1.3",
+    "python-dotenv>=1.0.1",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+]
