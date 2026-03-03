@@ -28,7 +28,7 @@ if SEARCH_TYPE == "manabi":
     }
 elif SEARCH_TYPE == "all_trend":
     WATCH_TAGS = []
-    MIN_STOCKS = 20
+    MIN_STOCKS = 15
     FETCH_DAYS = 7
     SLACK_BOT_SETTINGS = {
         "display_name": "Qiita-Trend-Monitor",

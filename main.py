@@ -2,12 +2,11 @@ import logging
 
 from src.notified_ids import load_notified_ids, save_notified_ids
 from src.qiita_client import fetch_qiita_articles
+from src.rag_indexer import save_article_to_supabase
 from src.slack_client import send_to_slack
 from src.summarizer import summarize_article
 
-logging.basicConfig(
-    level=logging.INFO, format="[%(levelname)s] %(asctime)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(asctime)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -32,6 +31,10 @@ def main():
     for article in new_articles:
         logger.info(f"Analyzing: {article.get('title')}")
         summary = summarize_article(article)
+
+        # RAG用DBへの保存 (Supabase)
+        logger.info("Indexing to Supabase...")
+        save_article_to_supabase(article.get("title", ""), article.get("url", ""), article.get("body", ""))
 
         logger.info("Sending to Slack...")
         send_to_slack(article, summary)
