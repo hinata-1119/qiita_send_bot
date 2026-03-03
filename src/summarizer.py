@@ -1,6 +1,8 @@
 import logging
 
 import google.api_core.exceptions
+import httpx
+import requests
 from google import genai
 
 from src.config import AI_FALLBACK_MODEL, AI_MODEL, GOOGLE_API_KEY, USE_AI_SUMMARY
@@ -39,18 +41,32 @@ def summarize_article(article: dict) -> str:
                 contents=full_prompt,
             )
             return response.text
-        except (
-            google.api_core.exceptions.ServiceUnavailable,  # 503エラー (サーバー混雑)
-            google.api_core.exceptions.ResourceExhausted,  # 429エラー (レート制限)
-        ) as e:
-            logger.warning(
-                f"AI Analysis with model '{model_name}' failed due to a transient error: {e}. Trying next model."
-            )
-            # 一時的なエラーなので、次のフォールバックモデルを試す (ループは継続)
-            pass
+        except google.api_core.exceptions.GoogleAPIError as e:
+            # Google API関連のエラーをキャッチし、エラーコードで一時的か判断
+            # 503: Service Unavailable, 429: Resource Exhausted
+            if e.code in [503, 429]:
+                logger.warning(f"AI Analysis with model '{model_name}' failed transient error (code {e.code}): {e}")
+                # 一時的なエラーなので、次のフォールバックモデルを試す (ループは継続)
+                pass
+            else:
+                logger.error(f"AI Analysis with model '{model_name}' failed API error (code {e.code}): {e}")
+                # 回復不能なエラーの場合はループを中断
+                break
+        except (requests.exceptions.HTTPError, httpx.HTTPStatusError) as e:
+            # underlying HTTP library (requests or httpx) のエラーを直接捕捉
+            status_code = e.response.status_code if hasattr(e, "response") and e.response else None
+            if status_code in [503, 429]:
+                logger.warning(
+                    f"AI Analysis with model '{model_name}' failed transient HTTP error (code {status_code}): {e} "
+                )
+                pass  # 一時的なエラーなので、次のフォールバックモデルを試す (ループは継続)
+            else:
+                logger.error(
+                    f"AI Analysis with model '{model_name}' failed with an HTTP error (code {status_code}): {e}"
+                )
+                break
         except Exception as e:
-            logger.error(f"AI Analysis with model '{model_name}' failed with a non-recoverable error: {e}")
-            # APIキーの間違いやプロンプトの問題など、回復不能なエラーの場合はループを中断
+            logger.error(f"AI Analysis with model '{model_name}' failed with an unexpected error: {e}")
             break
 
     logger.error(f"All AI models failed. Tried: {models_to_try}")
