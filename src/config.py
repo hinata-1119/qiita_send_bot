@@ -39,9 +39,10 @@ elif SEARCH_TYPE == "all_trend":
 # 共通設定・AI設定
 # ==========================================
 FETCH_MODE = "tag"  # "tag" (デフォルト) または "organization"
-FETCH_LIMIT = 5
+FETCH_LIMIT = 5  # 一度に取得する記事の最大数 (Qiita APIのper_pageパラメータ)
 USE_AI_SUMMARY = True
-AI_MODEL = "gemini-3-flash-preview"
+AI_MODEL = "gemini-3.1-pro-preview"
+AI_FALLBACK_MODEL = "gemini-2.5-flash"  # メインモデル失敗時の代替モデル
 
 # --- オプション設定 (将来的な拡張用) ---
 TARGET_ORGANIZATION = "MDXQ"  # FETCH_MODE = "organization" の時のみ使用
