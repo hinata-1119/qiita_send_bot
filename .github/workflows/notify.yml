@@ -2,10 +2,10 @@ name: Qiita Monitor
 
 on:
   schedule:
-    # 日本時間 08:30 (UTC 23:30 - 前日)
-    - cron: '30 23 * * *'
-    # 日本時間 20:30 (UTC 11:30)
-    - cron: '30 11 * * *'
+    # 日本時間 07:00 (UTC 22:00 - 前日)
+    - cron: '0 22 * * *'
+    # 日本時間 19:00 (UTC 10:00)
+    - cron: '0 10 * * *'
   workflow_dispatch:
   push:
     branches:
