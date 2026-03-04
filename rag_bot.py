@@ -62,7 +62,8 @@ def handle_mention(event, say):
 
     try:
         # 1. まず「考え中」メッセージを送る（これでユーザーは安心します）
-        processing_msg = say(f"「{user_query}」について調べています... :thinking_face:")
+        # thread_ts を指定することで、常にスレッドで応答するか、既存のスレッドで応答する
+        processing_msg = say(f"「{user_query}」について調べています... :thinking_face:", thread_ts=event["ts"])
         processing_msg_ts = processing_msg["ts"]
 
         # A. 質問をベクトル化（3072次元）
