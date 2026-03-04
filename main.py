@@ -1,9 +1,10 @@
 import logging
+from datetime import datetime
 
 from src.notified_ids import load_notified_ids, save_notified_ids
 from src.qiita_client import fetch_qiita_articles
 from src.rag_indexer import save_article_to_supabase
-from src.slack_client import send_to_slack
+from src.slack_client import post_message, send_to_slack
 from src.summarizer import summarize_article
 
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(asctime)s - %(message)s")
@@ -22,6 +23,8 @@ def main():
     new_articles = [a for a in articles if a["id"] not in notified_ids]
 
     if not new_articles:
+        current_time = datetime.now().strftime("%m/%d %H:%M")
+        post_message(f"({current_time}) 新着記事はありませんでした。")
         logger.info("No new articles to notify.")
         return
 

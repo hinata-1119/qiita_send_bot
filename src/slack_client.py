@@ -7,6 +7,25 @@ from src.config import SLACK_BOT_SETTINGS, SLACK_WEBHOOK_URL
 logger = logging.getLogger(__name__)
 
 
+def post_message(text: str):
+    """Slackにシンプルなテキストメッセージを投稿する"""
+    if not SLACK_WEBHOOK_URL:
+        logger.warning("SLACK_WEBHOOK_URL is not set.")
+        return
+
+    payload = {
+        "username": SLACK_BOT_SETTINGS.get("display_name", "Qiita Monitor"),
+        "icon_emoji": SLACK_BOT_SETTINGS.get("icon_emoji", ":robot_face:"),
+        "text": text,
+    }
+
+    try:
+        response = requests.post(SLACK_WEBHOOK_URL, json=payload)
+        response.raise_for_status()
+    except Exception as e:
+        logger.error(f"Failed to send Slack notification: {e}")
+
+
 def send_to_slack(article: dict, summary: str):
     if not SLACK_WEBHOOK_URL:
         logger.warning("SLACK_WEBHOOK_URL is not set.")
