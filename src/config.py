@@ -12,6 +12,10 @@ load_dotenv(ROOT_DIR / ".env")
 QIITA_TOKEN = os.environ.get("QIITA_TOKEN")
 SLACK_WEBHOOK_URL = os.environ.get("SLACK_WEBHOOK_URL")
 GOOGLE_API_KEY = os.environ.get("GOOGLE_API_KEY")
+SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN")
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
 # ==========================================
 # 🚀 ユーザー設定：ここを切り替えるだけ！
