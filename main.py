@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from src.config import FETCH_LIMIT
 from src.notified_ids import load_notified_ids, save_notified_ids
 from src.qiita_client import fetch_qiita_articles
 from src.rag_indexer import save_article_to_supabase
@@ -27,6 +28,10 @@ def main():
         post_message(f"({current_time}) 新着記事はありませんでした。")
         logger.info("No new articles to notify.")
         return
+
+    # 通知数の上限を適用（ここでconfigの設定値を使う）
+    if len(new_articles) > FETCH_LIMIT:
+        new_articles = new_articles[:FETCH_LIMIT]
 
     logger.info(f"Processing {len(new_articles)} new articles.")
     processed_ids = []

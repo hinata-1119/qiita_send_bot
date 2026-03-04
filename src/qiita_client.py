@@ -5,7 +5,6 @@ import requests
 
 from src.config import (
     FETCH_DAYS,
-    FETCH_LIMIT,
     FETCH_MODE,
     MIN_STOCKS,
     QIITA_TOKEN,
@@ -33,24 +32,34 @@ def fetch_qiita_articles() -> list:
         query_parts.append(f"stocks:>={MIN_STOCKS}")
 
     if FETCH_DAYS > 0:
-        target_date = datetime.now(timezone(timedelta(hours=9))) - timedelta(
-            days=FETCH_DAYS
-        )
+        target_date = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=FETCH_DAYS)
         query_parts.append(f"created:>={target_date.strftime('%Y-%m-%d')}")
 
     query = " ".join(query_parts)
     logger.info(f"Qiita API Query: {query}")
 
     url = "https://qiita.com/api/v2/items"
-    params = {"query": query, "page": 1, "per_page": FETCH_LIMIT}
+    all_articles = []
+    page = 1
 
-    try:
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Qiita API request failed: {e}")
-        return []
-    except Exception as e:
-        logger.error(f"An unexpected error occurred: {e}")
-        return []
+    # 最大10ページ（1000件）まで取得して、取りこぼしを防ぐ
+    while page <= 10:
+        params = {"query": query, "page": page, "per_page": 100}
+        try:
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            items = response.json()
+            if not items:
+                break
+            all_articles.extend(items)
+            if len(items) < 100:
+                break
+            page += 1
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Qiita API request failed: {e}")
+            break
+        except Exception as e:
+            logger.error(f"An unexpected error occurred: {e}")
+            break
+
+    return all_articles
