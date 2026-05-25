@@ -1,7 +1,7 @@
 -- 1. ベクトル機能を有効化（既に行っていればスキップされます）
 create extension if not exists vector;
 
--- 2. テーブルの定義（3072次元で確定）
+-- 2. テーブルの定義（768次元で確定）
 -- すでにテーブルがある場合は、一度 drop table technical_articles; してから実行してください
 create table if not exists technical_articles (
   id uuid primary key default gen_random_uuid(),
@@ -9,14 +9,14 @@ create table if not exists technical_articles (
   url text unique not null,
   content text,
   source_tag text,
-  embedding vector(3072), -- ここを3072に固定！
+  embedding vector(768), -- gemini-embedding-001 の次元数
   created_at timestamp with time zone default now()
 );
 
 -- 3. 検索用関数の定義（match_articles）
--- 紹介された match_documents の機能を 3072次元用に調整したものです
+-- 紹介された match_documents の機能を 768次元用に調整したものです
 create or replace function match_articles (
-  query_embedding vector(3072),
+  query_embedding vector(768),
   match_threshold float,
   match_count int
 )
